@@ -1,0 +1,102 @@
+1. Import a git repo in Repos clone of Azure DevOps
+
+
+2. Now create a new Agent Pool
+
+Go to Project Settings
+
+Pipelines -> Agent pools -> New -> Self-hosted - > Give a pool name -> Check the Grant access permission to all pipelines
+
+
+3. Have a Agent setup, say a EC2 Intance - Ubuntu
+
+sudo apt-get update -y
+
+sudo apt-get upgrade -y 
+
+sudo apt-get install maven -y
+
+Now go to the pool created
+
+New agent -> Click on Linux -> Copy the agent
+
+In the terminal download the agent package
+
+mkdir myagent 
+
+cd myagent
+
+wget https://vstsagentpackage.azureedge.net/agent/3.220.5/vsts-agent-linux-x64-3.220.5.tar.gz
+
+tar -xvf vsts-agent-linux-x64-3.220.5.tar.gz
+
+./config.sh
+
+Type Y
+
+Now for server URL - https://dev.azure.com/sqlonlinux
+
+Click enter for PAT
+
+Now go to User settings -> Select Personal Access Tokens -> Click on New Token
+
+Now enter the earlier created pool name
+
+Now to start the agent -> ./run.sh
+
+
+4. Now go to Pipelines and create on using a classic editior
+
+Select Maven
+
+Now select the created Agent pool
+
+Now go to Get sources and verify the configs 
+
+Now add tasks Docker- Intall Docker and buildAndPush
+
+
+5. Create a Service Connection to authenticate DockerHub
+
+Go to Project Settings -> Service Connection -> New Service Connection -> Select Docker Registry -> Select DockerHub -> Docker ID - Username & Docker Password - Password -> Click on Verify
+
+Give name to Service Connection 
+
+Check Grant access permission to all pipelines
+
+
+6. Now go to DockerHub and create a repo -> Make it public
+
+
+7. Executing the pipeline in the agent prior install docker
+
+sudo apt-get install docker.io
+
+sudo usermod -aG docker $USER
+
+sudo reboot
+
+Make sure the SG are open
+
+
+8. Now go to Pipeline created earlier
+
+Select buildAndPush -> Select the created Container registry -> Give the DockerHub repo Total name created earlier in the feild of Container repository -> In tags feild give as latest -> Unselect the Add pipleine  metadata to image(s) and Add base image metadata to image(s)
+
+Click on Save and queue
+
+
+9. Now go to Pipeline created earlier again and add a new task Bash Script to run a docker container
+
+In script feild write the below
+
+echo "Hello world"
+docker run -d --name secretsanta -p 8080:8080 pavanraj97/azure-demo-repo
+
+
+10. Access the Application
+
+
+
+
+
